@@ -1,6 +1,5 @@
-import fetch from 'node-fetch'
-
 // Simple proxy to fetch Google Sheets CSV server-side and return as text.
+// Uses Node.js 18+ built-in fetch (no node-fetch needed)
 // Usage: /api/proxy?sheet=Sheet%20Name
 export default async function handler(req, res) {
   try {
