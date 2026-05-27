@@ -1,0 +1,462 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --c-sidebar-bg:   #0f172a;
+  --c-sidebar-txt:  #94a3b8;
+  --c-sidebar-act:  #ffffff;
+  --c-sidebar-hover:#1e293b;
+  --c-accent:       #3b82f6;
+  --c-accent2:      #6366f1;
+  --c-bg:           #f1f5f9;
+  --c-card:         #ffffff;
+  --c-border:       #e2e8f0;
+  --c-text:         #0f172a;
+  --c-text2:        #64748b;
+  --c-green:        #10b981;
+  --c-red:          #ef4444;
+  --c-yellow:       #f59e0b;
+  --c-purple:       #8b5cf6;
+  --sidebar-w:      220px;
+  --header-h:       60px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+body { background: var(--c-bg); color: var(--c-text); font-size: 14px; }
+
+/* ── 레이아웃 ── */
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--c-sidebar-bg);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  z-index: 100;
+}
+.sidebar-logo {
+  padding: 20px 16px;
+  border-bottom: 1px solid #1e293b;
+}
+.sidebar-logo h2 {
+  color: #fff; font-size: 13px; font-weight: 700; letter-spacing: -0.3px;
+  line-height: 1.4;
+}
+.sidebar-logo span { color: var(--c-accent); display: block; font-size: 11px; margin-top: 2px; }
+.sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+.nav-section-title {
+  color: #475569; font-size: 10px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; padding: 8px 16px 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; cursor: pointer;
+  color: var(--c-sidebar-txt); font-size: 13px; font-weight: 500;
+  transition: background .15s, color .15s;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover  { background: var(--c-sidebar-hover); color: #cbd5e1; }
+.nav-item.active { background: var(--c-sidebar-hover); color: var(--c-sidebar-act); border-left-color: var(--c-accent); }
+.nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-badge { margin-left: auto; background: var(--c-accent); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
+.nav-coming { margin-left: auto; color: #475569; font-size: 10px; }
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #1e293b;
+  color: #475569; font-size: 11px;
+}
+
+/* ── 메인 콘텐츠 ── */
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  height: var(--header-h); background: var(--c-card);
+  border-bottom: 1px solid var(--c-border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; position: sticky; top: 0; z-index: 50;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.topbar-title { font-size: 16px; font-weight: 700; color: var(--c-text); }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.last-updated { font-size: 11px; color: var(--c-text2); }
+.btn-refresh {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 8px;
+  border: 1px solid var(--c-border); background: var(--c-card);
+  cursor: pointer; font-size: 12px; font-weight: 600; color: var(--c-accent);
+  transition: background .15s;
+}
+.btn-refresh:hover { background: #eff6ff; }
+.btn-refresh.spinning .refresh-icon { animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.content { padding: 24px; flex: 1; }
+
+/* ── 섹션 ── */
+.section { margin-bottom: 28px; }
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-title {
+  font-size: 15px; font-weight: 700; color: var(--c-text);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::before {
+  content: ''; display: inline-block;
+  width: 4px; height: 18px; background: var(--c-accent);
+  border-radius: 2px;
+}
+.section-sub { font-size: 12px; color: var(--c-text2); }
+
+/* ── 카드 ── */
+.card { background: var(--c-card); border-radius: 12px; border: 1px solid var(--c-border); padding: 16px; }
+.card-chart { padding: 20px; }
+
+/* ── KPI 그리드 ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--c-card); border-radius: 12px; border: 1px solid var(--c-border);
+  padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;
+  transition: box-shadow .15s;
+}
+.kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+.kpi-label { font-size: 11px; font-weight: 600; color: var(--c-text2); letter-spacing: -.2px; }
+.kpi-value { font-size: 20px; font-weight: 700; color: var(--c-text); letter-spacing: -.5px; }
+.kpi-value.sm { font-size: 16px; }
+.kpi-sub  { font-size: 11px; color: var(--c-text2); }
+.kpi-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; width: fit-content;
+}
+.kpi-badge.up   { background: #d1fae5; color: #065f46; }
+.kpi-badge.down { background: #fee2e2; color: #991b1b; }
+.kpi-badge.neutral { background: #f1f5f9; color: #64748b; }
+.kpi-badge.pct-high { background: #dbeafe; color: #1e40af; }
+.kpi-badge.pct-mid  { background: #fef3c7; color: #92400e; }
+.kpi-badge.pct-low  { background: #fee2e2; color: #991b1b; }
+
+/* ── 필터 바 ── */
+.filter-bar {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
+  background: var(--c-card); border-radius: 12px; border: 1px solid var(--c-border);
+  padding: 14px 16px; margin-bottom: 14px;
+}
+.filter-group { display: flex; flex-direction: column; gap: 4px; min-width: 130px; }
+.filter-label { font-size: 11px; font-weight: 600; color: var(--c-text2); }
+.filter-select, .filter-input {
+  border: 1px solid var(--c-border); border-radius: 8px;
+  padding: 6px 10px; font-size: 12px; font-family: inherit;
+  background: #f8fafc; color: var(--c-text); outline: none;
+  transition: border-color .15s;
+}
+.filter-select:focus, .filter-input:focus { border-color: var(--c-accent); background: #fff; }
+.btn-reset {
+  padding: 6px 14px; border-radius: 8px; border: 1px solid var(--c-border);
+  background: var(--c-card); cursor: pointer; font-size: 12px; font-weight: 600;
+  color: var(--c-text2); transition: background .15s;
+  align-self: flex-end;
+}
+.btn-reset:hover { background: #f8fafc; color: var(--c-text); }
+
+/* ── 테이블 ── */
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--c-border); }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  background: #f8fafc; font-size: 11px; font-weight: 700; color: var(--c-text2);
+  padding: 10px 14px; text-align: right; white-space: nowrap;
+  border-bottom: 1px solid var(--c-border);
+}
+.data-table th:first-child { text-align: left; }
+.data-table td {
+  padding: 10px 14px; border-bottom: 1px solid #f1f5f9;
+  text-align: right; color: var(--c-text);
+}
+.data-table td:first-child { text-align: left; font-weight: 500; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #f8fafc; }
+.data-table .row-total td { background: #f1f5f9; font-weight: 700; border-top: 2px solid var(--c-border); }
+
+.sub-tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 1100px) { .sub-tables-grid { grid-template-columns: 1fr; } }
+
+.sub-table-title { font-size: 13px; font-weight: 700; color: var(--c-text); margin-bottom: 8px; padding-left: 2px; }
+
+/* ── 로딩 / 에러 ── */
+.center-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; gap: 12px; }
+.spinner { width: 36px; height: 36px; border: 3px solid #e2e8f0; border-top-color: var(--c-accent); border-radius: 50%; animation: spin .7s linear infinite; }
+.error-box { background: #fee2e2; border: 1px solid #fca5a5; border-radius: 12px; padding: 16px 20px; color: #991b1b; font-size: 13px; max-width: 600px; }
+.error-box h3 { font-size: 14px; margin-bottom: 6px; }
+
+/* ── 차트 컨테이너 ── */
+.chart-container { position: relative; height: 300px; }
+
+/* ── 탭 ── */
+.tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.tab-btn {
+  padding: 7px 16px; border-radius: 8px; border: 1px solid var(--c-border);
+  background: var(--c-card); cursor: pointer; font-size: 12px; font-weight: 600;
+  color: var(--c-text2); transition: all .15s;
+}
+.tab-btn.active { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+
+/* ═══════════════════════════════════════
+   메뉴 2 — 매출 상세 테이블
+═══════════════════════════════════════ */
+.m2-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--c-border);
+  background: #fff;
+}
+
+.m2-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 1400px;
+}
+
+/* 헤더 */
+.m2-th {
+  background: #1e293b;
+  color: #f1f5f9;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 9px 10px;
+  text-align: center;
+  white-space: nowrap;
+  border-right: 1px solid #334155;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.m2-th-sec    { left: 0;   z-index: 6; min-width: 64px; }
+.m2-th-period { left: 64px; z-index: 6; min-width: 90px; }
+.m2-th-val    { text-align: right; }
+
+/* 섹션 레이블 (구분 칸) */
+.m2-td-sec {
+  background: #f1f5f9;
+  font-weight: 700;
+  font-size: 11px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: pre-line;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 2px solid #cbd5e1;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  min-width: 64px;
+}
+
+/* 기간 레이블 */
+.m2-td-period {
+  background: #f8fafc;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+  padding: 7px 10px;
+  border-right: 1px solid #e2e8f0;
+  position: sticky;
+  left: 64px;
+  z-index: 2;
+  min-width: 90px;
+}
+
+/* 값 셀 */
+.m2-td {
+  padding: 7px 10px;
+  text-align: right;
+  color: var(--c-text);
+  border-bottom: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+  white-space: nowrap;
+}
+
+/* 2026년 실적 행 하이라이트 */
+.m2-tr-act26 .m2-td,
+.m2-tr-act26 .m2-td-period,
+.m2-tr-act26 .m2-td-sec {
+  background: #fef9c3;
+  font-weight: 700;
+  color: #78350f;
+}
+
+/* 섹션 구분선 (두 번째 섹션부터 위쪽 굵은 선) */
+.m2-tr-section-start .m2-td,
+.m2-tr-section-start .m2-td-period {
+  border-top: 2px solid #cbd5e1;
+}
+
+/* YoY 색상 */
+.m2-pos { color: #16a34a; font-weight: 600; }
+.m2-neg { color: #dc2626; font-weight: 600; }
+
+/* 공란 (B2C 등) */
+.m2-blank { color: #94a3b8; }
+
+/* 진척률 / YoY 행 폰트 */
+.m2-tr-rate .m2-td,
+.m2-tr-yoy  .m2-td  { font-size: 11px; color: #475569; }
+
+/* 합계 열 (첫 번째 값 열) 강조 */
+.m2-td-val:first-of-type { font-weight: 600; }
+
+/* ═══════════════════════════════════════════════════════════
+   Menu 3 — 매출 보고 (ReportTable)
+═══════════════════════════════════════════════════════════ */
+
+.r3-wrap {
+  position: relative;
+}
+
+.r3-unit-note {
+  font-size: 11px;
+  color: #64748b;
+  text-align: right;
+  margin-bottom: 4px;
+}
+
+.r3-week-note {
+  font-size: 11px;
+  color: #6366f1;
+  font-weight: 600;
+  text-align: right;
+  margin-bottom: 8px;
+}
+
+.r3-scroll {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.r3-table {
+  border-collapse: collapse;
+  min-width: 100%;
+  background: #fff;
+  font-size: 12px;
+}
+
+/* ── 헤더 ── */
+.r3-th {
+  padding: 8px 10px;
+  font-weight: 600;
+  font-size: 11px;
+  white-space: nowrap;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  background: #f8fafc;
+  color: #334155;
+}
+
+.r3-th-item {
+  background: #1e293b;
+  color: #f1f5f9;
+  font-size: 12px;
+  min-width: 110px;
+  text-align: center;
+}
+
+/* 당월 그룹 */
+.r3-g-mon  { background: #eff6ff; color: #1d4ed8; border-top: 3px solid #3b82f6; }
+/* 전년비교 */
+.r3-g-yoy  { background: #f0fdf4; color: #15803d; border-top: 3px solid #22c55e; }
+/* 누계목표 */
+.r3-g-cum  { background: #fffbeb; color: #b45309; border-top: 3px solid #f59e0b; }
+
+.r3-th-sub { background: #f8fafc; color: #475569; font-size: 11px; }
+
+/* ── 데이터 셀 ── */
+.r3-td {
+  padding: 7px 10px;
+  border: 1px solid #f1f5f9;
+  white-space: nowrap;
+}
+
+.r3-td-item {
+  font-weight: 600;
+  color: #1e293b;
+  background: #f8fafc;
+  border-right: 2px solid #e2e8f0;
+  text-align: left;
+  padding-left: 12px;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.r3-td-val {
+  text-align: right;
+  color: #374151;
+}
+
+.r3-td-empty {
+  text-align: center;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 12px;
+}
+
+/* 강조 셀 (금주 누계 / 누계 실적) */
+.r3-emphasis {
+  font-weight: 700;
+  color: #1d4ed8 !important;
+  background: #f0f7ff;
+}
+
+/* ── 행 타입 ── */
+.r3-tr:hover .r3-td { background: #f8fafc; }
+
+/* 섹션 헤더 행 */
+.r3-tr-section .r3-td-section-hd {
+  background: #1e293b;
+  color: #94a3b8;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-top: 1px solid #334155;
+}
+
+/* 소계 행 */
+.r3-tr-sub .r3-td {
+  background: #f1f5f9;
+  font-weight: 700;
+  color: #1e293b;
+  border-top: 2px solid #cbd5e1;
+  border-bottom: 2px solid #cbd5e1;
+}
+.r3-tr-sub .r3-td-item {
+  background: #e2e8f0;
+}
+
+/* 총계 행 */
+.r3-tr-total .r3-td {
+  background: #1e293b;
+  color: #f1f5f9;
+  font-weight: 700;
+  font-size: 13px;
+  border-top: 3px solid #3b82f6;
+}
+.r3-tr-total .r3-td-item {
+  background: #0f172a;
+  color: #fff;
+}
+.r3-tr-total .r3-emphasis {
+  background: #1d4ed8 !important;
+  color: #fff !important;
+}
+
+/* ── 달성율 색상 ── */
+.r3-pct-high { color: #16a34a !important; font-weight: 700; }
+.r3-pct-mid  { color: #d97706 !important; font-weight: 600; }
+.r3-pct-low  { color: #dc2626 !important; font-weight: 600; }
+
+/* ── 성장율 색상 ── */
+.r3-up   { color: #16a34a !important; font-weight: 600; }
+.r3-down { color: #dc2626 !important; font-weight: 600; }

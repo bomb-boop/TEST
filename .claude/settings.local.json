@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.google.com)",
+      "mcp__Claude_in_Chrome__list_connected_browsers",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(timeout 30 npx vite build --logLevel info)",
+      "Bash(echo \"EXIT:$?\")"
+    ]
+  }
+}
