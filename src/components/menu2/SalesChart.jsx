@@ -1,12 +1,18 @@
 import {
   Chart as ChartJS, CategoryScale, LinearScale,
   BarElement, LineElement, PointElement,
+  BarController, LineController,
   Title, Tooltip, Legend,
 } from 'chart.js'
 import { Chart } from 'react-chartjs-2'
 import { fmtKRWFull } from '../../utils/dataUtils.js'
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend)
+ChartJS.register(
+  CategoryScale, LinearScale,
+  BarElement, LineElement, PointElement,
+  BarController, LineController,
+  Title, Tooltip, Legend
+)
 
 const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
 
