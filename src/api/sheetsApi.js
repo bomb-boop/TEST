@@ -33,7 +33,10 @@ export async function fetchSheetRaw(sheetName) {
   try {
     const url = `/api/proxy?sheet=${encodeURIComponent(sheetName)}`
     const res = await fetch(url, { cache: 'no-store' })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    if (!res.ok) {
+      const body = await res.text().catch(() => '')
+      throw new Error(`HTTP ${res.status}${body ? ` — ${body}` : ''}`)
+    }
     const text = await res.text()
     if (text.includes('accounts.google.com') || text.includes('ServiceLogin'))
       throw new Error('시트 접근 권한 없음 (공유 설정 확인)')
@@ -49,7 +52,10 @@ export async function fetchSheet(sheetName) {
   try {
     const url = `/api/proxy?sheet=${encodeURIComponent(sheetName)}`
     const res = await fetch(url, { cache: 'no-store' })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    if (!res.ok) {
+      const body = await res.text().catch(() => '')
+      throw new Error(`HTTP ${res.status}${body ? ` — ${body}` : ''}`)
+    }
     const text = await res.text()
     // Google 로그인 페이지가 반환된 경우 감지
     if (text.includes('accounts.google.com') || text.includes('ServiceLogin')) {
