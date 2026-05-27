@@ -1,4 +1,4 @@
-import { csvUrl } from '../config.js'
+// Use server-side proxy endpoint to avoid CORS / login redirects when deployed
 
 // ── CSV 파서 ────────────────────────────────────────────────
 function parseCSVLine(line) {
@@ -31,7 +31,7 @@ export function parseCSV(text) {
 // ── raw CSV fetch (헤더 중복 시트용, e.g. B2C) ────────────────
 export async function fetchSheetRaw(sheetName) {
   try {
-    const url = csvUrl(sheetName)
+    const url = `/api/proxy?sheet=${encodeURIComponent(sheetName)}`
     const res = await fetch(url, { cache: 'no-store' })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const text = await res.text()
@@ -47,7 +47,7 @@ export async function fetchSheetRaw(sheetName) {
 // ── fetch 래퍼 ───────────────────────────────────────────────
 export async function fetchSheet(sheetName) {
   try {
-    const url = csvUrl(sheetName)
+    const url = `/api/proxy?sheet=${encodeURIComponent(sheetName)}`
     const res = await fetch(url, { cache: 'no-store' })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const text = await res.text()
