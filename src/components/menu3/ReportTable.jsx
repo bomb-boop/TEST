@@ -194,15 +194,27 @@ export default function ReportTable({
   const b2bRows = useMemo(() => {
     // 해외법인 아닌 거래처 → 국가별 묶기
     const countryMap = {}  // country → [customer]
+    const mappedCusts = new Set()
     for (const [cust, country] of Object.entries(customerCountry || {})) {
       if (overseasNames.has(cust)) continue
       if (!country) continue
       if (!countryMap[country]) countryMap[country] = []
       countryMap[country].push(cust)
+      mappedCusts.add(cust)
     }
-    return Object.entries(countryMap)
+    const rows = Object.entries(countryMap)
       .map(([country, customers]) => buildRow(country, customers, ctx))
       .sort((a, b) => b.thisWeekCum - a.thisWeekCum)  // 금주 누계 내림차순
+
+    // 국가 미분류 B2B 거래처 → '기타' 행으로 포함 (소계 정합성 유지)
+    const unmapped = [...new Set(
+      b2bRecords
+        .filter(r => !overseasNames.has(r.customer) && !mappedCusts.has(r.customer))
+        .map(r => r.customer)
+    )]
+    if (unmapped.length > 0) rows.push(buildRow('기타', unmapped, ctx))
+
+    return rows
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerCountry, overseasNames, b2bRecords, targetByCustomer, estByCustomer, weeklyByCustomer, currentYear, currentMonth])
 
