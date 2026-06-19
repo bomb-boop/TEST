@@ -10,7 +10,7 @@ import {
   processB2CData,
   getDateContext,
 } from '../utils/dataUtils.js'
-import { SHEETS } from '../config.js'
+import { SHEETS, OVERSEAS_FIXED } from '../config.js'
 
 const REFRESH_MS = 5 * 60 * 1000   // 5분마다 자동 갱신
 
@@ -78,6 +78,15 @@ export function useAllSheets() {
 
       const { totalEst, customerCountry, overseasNames, overseasMap, estByCustomer } =
         processEstData(est.rows)
+
+      // config.js OVERSEAS_FIXED 고정 해외법인 병합
+      for (const [법인명, customers] of Object.entries(OVERSEAS_FIXED)) {
+        for (const cust of customers) {
+          overseasNames.add(cust)
+          if (!overseasMap[법인명]) overseasMap[법인명] = []
+          if (!overseasMap[법인명].includes(cust)) overseasMap[법인명].push(cust)
+        }
+      }
 
       // 국가 정보 보완: '당월 예상매출' 시트 '메인유통국가' 기준 → 없으면 B2B 시트 국가 유지
       const b2bRecords = rawB2BRecords.map(r => ({
