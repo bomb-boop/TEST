@@ -30,30 +30,27 @@ export function getDateContext() {
 export function processB2BData(rows) {
   return rows
     .map(r => {
-      // 날짜: '실적일자'(YYYY-MM-DD) 또는 '년도'+'월' 별도 컬럼 모두 지원
+      // 실적일자 날짜 파싱 — 여러 형식 지원
+      //   YYYY-MM-DD, YYYY-M-D, YYYY/MM/DD, YYYY.MM.DD
+      //   YYYY-MM, YYYY-M, YYYY년MM월, YYYY년 M월, YYYYMM
       let year = 0, month = 0
       const dateStr = (r['실적일자'] || '').trim()
-      if (dateStr.length >= 7) {
-        year  = parseInt(dateStr.substring(0, 4)) || 0
-        month = parseInt(dateStr.substring(5, 7)) || 0
-      } else {
-        year  = parseInt(r['년도'] || r['연도'] || 0)
-        month = parseInt(r['월']   || 0)
+      const m = dateStr.match(/^(\d{4})\D+(\d{1,2})/) ||  // 구분자 있는 경우
+                dateStr.match(/^(\d{4})(\d{2})/)           // YYYYMM 붙어있는 경우
+      if (m) {
+        year  = parseInt(m[1])
+        month = parseInt(m[2])
       }
-      // 금액: 컬럼명 복수 지원
-      const krw = parseNum(
-        r['원화판매금액'] || r['원화판매금액계'] || r['원화금액'] || r['판매금액(원)']
-      )
       return {
         year,
         month,
-        customer: (r['거래처']                        || '').trim(),
-        person:   (r['담당자']                        || '').trim(),
-        item:     (r['품번']                          || '').trim(),
-        itemName: (r['품명']                          || '').trim(),
-        country:  (r['국가'] || r['메인유통국가']     || '').trim(),
-        category: (r['구분']                          || '').trim(),
-        krw,
+        customer: (r['거래처']         || '').trim(),
+        person:   (r['담당자']         || '').trim(),
+        item:     (r['품번']           || '').trim(),
+        itemName: (r['품명']           || '').trim(),
+        country:  (r['국가']           || '').trim(),
+        category: (r['구분']           || '').trim(),
+        krw:      parseNum(r['원화판매금액']),
       }
     })
     .filter(r => r.year > 0 && r.month > 0 && r.krw !== 0)
