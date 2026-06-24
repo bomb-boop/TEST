@@ -76,23 +76,6 @@ export function useAllSheets() {
       // ── 데이터 가공 ───────────────────────────────────────
       const rawB2BRecords = processB2BData(b2b.rows)
 
-      // ── DEBUG: B2B 원시 데이터 확인 ─────────────────────
-      console.group('[DEBUG] B2B 마감 현황')
-      // 2026년 월별 레코드 수
-      const month2026 = {}
-      for (const r of rawB2BRecords) {
-        if (r.year !== 2026) continue
-        month2026[r.month] = (month2026[r.month] || 0) + 1
-      }
-      console.log('2026년 월별 레코드 수:', month2026)
-      // SIMPLE B / Adaline 검색 (case-insensitive)
-      const azSearch = rawB2BRecords.filter(r => {
-        const n = r.customer.toLowerCase()
-        return n.includes('simple') || n.includes('adaline') || n.includes('sinar')
-      })
-      console.log('SIMPLE/Adaline/SINAR 검색 결과:', azSearch.map(r => ({ customer: r.customer, year: r.year, month: r.month, krw: r.krw })))
-      console.groupEnd()
-
       const { totalEst, customerCountry, overseasNames, overseasMap, estByCustomer } =
         processEstData(est.rows)
 

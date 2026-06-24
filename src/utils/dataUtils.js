@@ -44,7 +44,7 @@ export function processB2BData(rows) {
       return {
         year,
         month,
-        customer: (r['거래처']         || '').trim(),
+        customer: (r['거래처']         || '').trim().toUpperCase(),
         person:   (r['담당자']         || '').trim(),
         item:     (r['품번']           || '').trim(),
         itemName: (r['품명']           || '').trim(),
@@ -120,7 +120,7 @@ export function processTargetBySplit(rows, headers, overseasNames) {
     for (const r of rows) {
       const amt  = parseNum(r[col])
       // 목표 시트의 거래처명 컬럼 (거래처명 또는 거래처)
-      const name = (r['거래처명'] || r['거래처'] || '').trim()
+      const name = (r['거래처명'] || r['거래처'] || '').trim().toUpperCase()
 
       targetMap[year][month] += amt
 
@@ -148,7 +148,7 @@ export function processEstData(rows) {
   const estByCustomer   = {}          // 거래처 → 예상매출 합계
 
   for (const r of rows) {
-    const customer = (r['거래처'] || '').trim()
+    const customer = (r['거래처'] || '').trim().toUpperCase()
     const country  = (r['메인유통국가'] || '').trim()
     const amt      = parseNum(r['예상 매출'])
     const 명칭     = (r['명칭'] || '').trim()   // 해외법인 거래처명 열
@@ -220,7 +220,7 @@ export function processShipmentData(rows, amountCol, overseasNames = new Set()) 
   let total = 0, b2bTotal = 0, overseasTotal = 0
   for (const r of monthRows) {
     const amt      = parseNum(r[amountCol])
-    const customer = (r['거래처'] || r['거래처명'] || '').trim()
+    const customer = (r['거래처'] || r['거래처명'] || '').trim().toUpperCase()
     total += amt
     if (customer && overseasNames.has(customer)) {
       overseasTotal += amt
@@ -269,7 +269,7 @@ export function processShipmentWeekly(rows, amountCol, overseasNames = new Set()
   for (const r of monthRows) {
     const amt      = parseNum(r[amountCol])
     if (amt === 0) continue
-    const customer = (r['거래처'] || r['거래처명'] || '').trim()
+    const customer = (r['거래처'] || r['거래처명'] || '').trim().toUpperCase()
     if (!customer) continue
     const date    = (r['납기일'] || '').trim().substring(0, 10)
     const isThis  = weekStart ? date >= weekStart : false
@@ -291,7 +291,7 @@ export function processTargetByCustomer(rows, headers) {
   const ymCols = (headers || []).filter(h => /^20\d{4}$/.test((h || '').trim()))
 
   for (const r of rows) {
-    const name = (r['거래처명'] || r['거래처'] || '').trim()
+    const name = (r['거래처명'] || r['거래처'] || '').trim().toUpperCase()
     if (!name) continue
     for (const col of ymCols) {
       const ym   = col.trim()
