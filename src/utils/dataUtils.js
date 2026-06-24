@@ -309,11 +309,12 @@ export function processTargetByCustomer(rows, headers) {
 
 // ────────────────────────────────────────────────────────────
 //  B2C 시트 파싱 (원시 CSV 텍스트 → 월별 배열)
-//  A열=년도, B열='총합계' 행을 기준으로 데이터 추출
+//  시트 구조: A열=년도, B열=플랫폼명, C~N열=1월~12월
+//  년도는 그룹 첫 행에만 있을 수 있음 (Google Sheets 병합 셀 대응)
 //
 //  반환: {
-//    actPrev:  [m1..m12],   // prevYear 실적 (예: 2025 실적)
-//    tgtCurr:  [m1..m12],   // currentYear 목표
+//    actPrev:  [m1..m12],   // prevYear 실적
+//    tgtCurr:  null,        // 목표는 별도 시트에서 관리
 //    actCurr:  [m1..m12],   // currentYear 실적 (미입력 월 = null)
 //  }
 // ────────────────────────────────────────────────────────────
@@ -335,11 +336,14 @@ export function processB2CData(rawText, currentYear) {
   function toNum(v) {
     if (!v || v.trim() === '' || v.trim() === '-') return null
     const n = Number(v.replace(/[,\s₩]/g, ''))
-    return isNaN(n) ? null : (n > 0 ? n : null)  // 0 = 미입력으로 처리
+    return isNaN(n) ? null : (n > 0 ? n : null)
   }
 
   const lines = (rawText || '').split(/\r?\n/).filter(l => l.trim())
-  let curYear = null, curType = null
+  let curYear = null
+  // 플랫폼별 누산 (총합계 행이 없는 경우 대비)
+  const sumPrev = Array(12).fill(null)
+  const sumCurr = Array(12).fill(null)
   const result = { actPrev: null, tgtCurr: null, actCurr: null }
 
   for (const line of lines) {
@@ -347,29 +351,30 @@ export function processB2CData(rawText, currentYear) {
     const colA = (cols[0] || '').trim()
     const colB = (cols[1] || '').trim()
 
-    // A열에 년도 → 섹션 시작 (예: "2026", "2026 목표")
-    if (/^20\d{2}$/.test(colA)) {
-      curYear = parseInt(colA)
-      if (colB.includes('목표'))      curType = '목표'
-      else if (colB.includes('실적')) curType = '실적'
-      continue
-    }
+    // A열에 4자리 년도 → 현재 년도 컨텍스트 갱신 (병합 셀: 첫 행에만 년도 있음)
+    if (/^20\d{2}$/.test(colA)) curYear = parseInt(colA)
 
-    // B열에 "YYYY 목표/실적" 형태 → 하위 섹션 (A열 비어있는 경우)
-    if (/^20\d{2}\s*(목표|실적)/.test(colB)) {
-      curYear = parseInt(colB.slice(0, 4))
-      curType  = colB.includes('목표') ? '목표' : '실적'
-      continue
-    }
+    if (!curYear) continue
+    if (curYear !== prevYear && curYear !== currentYear) continue
 
-    // '총합계' 행 → 월별 값 추출 (C~N열 = 1월~12월)
-    if (colB === '총합계' && curYear && curType) {
-      const monthly = Array.from({ length: 12 }, (_, i) => toNum(cols[i + 2] || ''))
-      if (curYear === prevYear    && curType === '실적') result.actPrev = monthly
-      if (curYear === currentYear && curType === '목표') result.tgtCurr = monthly
-      if (curYear === currentYear && curType === '실적') result.actCurr = monthly
+    const monthly = Array.from({ length: 12 }, (_, i) => toNum(cols[i + 2] || ''))
+    const target  = curYear === prevYear ? sumPrev : sumCurr
+
+    if (colB === '총합계' || colB === '합계') {
+      // 합계 행을 직접 사용
+      if (curYear === prevYear)    result.actPrev = monthly
+      if (curYear === currentYear) result.actCurr = monthly
+    } else if (colB && !colB.includes('플랫폼') && !colB.includes('항목')) {
+      // 플랫폼별 행 → 누산 (합계 행이 없는 경우 폴백용)
+      for (let i = 0; i < 12; i++) {
+        if (monthly[i] !== null) target[i] = (target[i] || 0) + monthly[i]
+      }
     }
   }
+
+  // 합계 행이 없었던 경우 누산 값을 사용
+  if (!result.actPrev && sumPrev.some(v => v !== null)) result.actPrev = sumPrev
+  if (!result.actCurr && sumCurr.some(v => v !== null)) result.actCurr = sumCurr
 
   return result
 }
