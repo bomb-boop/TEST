@@ -78,18 +78,19 @@ export function useAllSheets() {
 
       // ── DEBUG: B2B 원시 데이터 확인 ─────────────────────
       console.group('[DEBUG] B2B 마감 현황')
-      console.log('processB2BData 결과 레코드 수:', rawB2BRecords.length)
-      const yearCounts = {}
-      for (const r of rawB2BRecords) yearCounts[r.year] = (yearCounts[r.year] || 0) + 1
-      console.log('연도별 레코드 수:', yearCounts)
-      // 2026 레코드 거래처별 합계 (상위 20개)
-      const cust2026 = {}
+      // 2026년 월별 레코드 수
+      const month2026 = {}
       for (const r of rawB2BRecords) {
         if (r.year !== 2026) continue
-        cust2026[r.customer] = (cust2026[r.customer] || 0) + r.krw
+        month2026[r.month] = (month2026[r.month] || 0) + 1
       }
-      const top2026 = Object.entries(cust2026).sort((a,b)=>b[1]-a[1]).slice(0,20)
-      console.log('2026년 거래처별 합계 TOP20:', top2026)
+      console.log('2026년 월별 레코드 수:', month2026)
+      // SIMPLE B / Adaline 검색 (case-insensitive)
+      const azSearch = rawB2BRecords.filter(r => {
+        const n = r.customer.toLowerCase()
+        return n.includes('simple') || n.includes('adaline') || n.includes('sinar')
+      })
+      console.log('SIMPLE/Adaline/SINAR 검색 결과:', azSearch.map(r => ({ customer: r.customer, year: r.year, month: r.month, krw: r.krw })))
       console.groupEnd()
 
       const { totalEst, customerCountry, overseasNames, overseasMap, estByCustomer } =
