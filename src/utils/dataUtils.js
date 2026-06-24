@@ -30,19 +30,30 @@ export function getDateContext() {
 export function processB2BData(rows) {
   return rows
     .map(r => {
+      // 날짜: '실적일자'(YYYY-MM-DD) 또는 '년도'+'월' 별도 컬럼 모두 지원
+      let year = 0, month = 0
       const dateStr = (r['실적일자'] || '').trim()
-      const year    = parseInt(dateStr.substring(0, 4)) || 0
-      const month   = parseInt(dateStr.substring(5, 7)) || 0
+      if (dateStr.length >= 7) {
+        year  = parseInt(dateStr.substring(0, 4)) || 0
+        month = parseInt(dateStr.substring(5, 7)) || 0
+      } else {
+        year  = parseInt(r['년도'] || r['연도'] || 0)
+        month = parseInt(r['월']   || 0)
+      }
+      // 금액: 컬럼명 복수 지원
+      const krw = parseNum(
+        r['원화판매금액'] || r['원화판매금액계'] || r['원화금액'] || r['판매금액(원)']
+      )
       return {
         year,
         month,
-        customer: (r['거래처']         || '').trim(),
-        person:   (r['담당자']         || '').trim(),
-        item:     (r['품번']           || '').trim(),   // 집계 키
-        itemName: (r['품명']           || '').trim(),   // 표시용 품명
-        country:  (r['국가']           || '').trim(),
-        category: (r['구분']           || '').trim(),   // B2B / 해외법인수출 / B2C
-        krw:      parseNum(r['원화판매금액']),
+        customer: (r['거래처']                        || '').trim(),
+        person:   (r['담당자']                        || '').trim(),
+        item:     (r['품번']                          || '').trim(),
+        itemName: (r['품명']                          || '').trim(),
+        country:  (r['국가'] || r['메인유통국가']     || '').trim(),
+        category: (r['구분']                          || '').trim(),
+        krw,
       }
     })
     .filter(r => r.year > 0 && r.month > 0 && r.krw !== 0)
