@@ -76,6 +76,19 @@ export function useAllSheets() {
       // ── 데이터 가공 ───────────────────────────────────────
       const rawB2BRecords = processB2BData(b2b.rows)
 
+      // ── DEBUG: B2B 원시 데이터 확인 ─────────────────────
+      console.group('[DEBUG] B2B 마감 현황')
+      console.log('총 행 수 (raw):', b2b.rows.length)
+      console.log('헤더:', b2b.headers)
+      if (b2b.rows.length > 0) console.log('첫 번째 행 샘플:', b2b.rows[0])
+      console.log('processB2BData 결과 레코드 수:', rawB2BRecords.length)
+      const yearCounts = {}
+      for (const r of rawB2BRecords) yearCounts[r.year] = (yearCounts[r.year] || 0) + 1
+      console.log('연도별 레코드 수:', yearCounts)
+      const sampleAZ = rawB2BRecords.filter(r => r.customer.includes('SIMPLE') || r.customer.includes('Adaline') || r.customer.includes('아제'))
+      console.log('아제르바이잔 관련 레코드 샘플:', sampleAZ.slice(0, 5))
+      console.groupEnd()
+
       const { totalEst, customerCountry, overseasNames, overseasMap, estByCustomer } =
         processEstData(est.rows)
 
