@@ -174,7 +174,6 @@ export default function ReportTable({
   overseasNames,
   weeklyByCustomer,
   weekStart,
-  b2cData,
   currentYear,
   currentMonth,
 }) {
@@ -218,34 +217,14 @@ export default function ReportTable({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerCountry, overseasNames, b2bRecords, targetByCustomer, estByCustomer, weeklyByCustomer, currentYear, currentMonth])
 
-  // ── B2C 행 ───────────────────────────────────────────────
-  const b2cRow = useMemo(() => {
-    if (!b2cData) return null
-    const mi = currentMonth - 1
-    const monthTarget  = b2cData.tgtCurr?.[mi] ?? 0
-    const thisWeekCum  = b2cData.actCurr?.[mi] ?? 0
-    const prevYearMon  = b2cData.actPrev?.[mi] ?? 0
-    const cumTarget    = (b2cData.tgtCurr  || []).slice(0, currentMonth).reduce((s, v) => s + (v || 0), 0)
-    const cumActual    = (b2cData.actCurr  || []).slice(0, currentMonth).reduce((s, v) => s + (v || 0), 0)
-    const prevYearCum  = (b2cData.actPrev  || []).slice(0, currentMonth).reduce((s, v) => s + (v || 0), 0)
-    return {
-      label: 'B2C',
-      monthTarget, monthEst: thisWeekCum,
-      prevWeek: 0, thisWeek: thisWeekCum, thisWeekCum,
-      prevYearMon,
-      cumTarget, cumActual, prevYearCum,
-    }
-  }, [b2cData, currentMonth])
-
   // ── 법인/B2B 소계 ─────────────────────────────────────────
   const corpSubtotal = useMemo(() => ({ label: '법인 소계', ...sumRows(corpRows) }), [corpRows])
   const b2bSubtotal  = useMemo(() => ({ label: 'B2B 소계',  ...sumRows(b2bRows) }), [b2bRows])
 
   // ── 총계 ─────────────────────────────────────────────────
   const grandTotal = useMemo(() => {
-    const rows = [...corpRows, ...b2bRows, ...(b2cRow ? [b2cRow] : [])]
-    return { label: '총계', ...sumRows(rows) }
-  }, [corpRows, b2bRows, b2cRow])
+    return { label: '총계', ...sumRows([...corpRows, ...b2bRows]) }
+  }, [corpRows, b2bRows])
 
   // 1(항목) + 6(당월) + 2(전년동월) + 3(누계) + 2(전년누계) = 14
   const COL_COUNT = 14
@@ -340,17 +319,6 @@ export default function ReportTable({
             )}
             {b2bRows.map((row, i) => <DataRow key={i} row={row} />)}
             <DataRow row={b2bSubtotal} isSubtotal />
-
-            {/* ─── B2C 섹션 ──────────────────────────────── */}
-            <SectionHeader label="B2C" colSpan={COL_COUNT} />
-            {b2cRow
-              ? <DataRow row={b2cRow} isSubtotal />
-              : (
-                <tr className="r3-tr">
-                  <td className="r3-td r3-td-empty" colSpan={COL_COUNT}>B2C 데이터 없음</td>
-                </tr>
-              )
-            }
 
             {/* ─── 총계 ──────────────────────────────────── */}
             <DataRow row={grandTotal} isGrandTotal />

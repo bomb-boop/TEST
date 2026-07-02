@@ -10,7 +10,6 @@ export default function Menu3({
   overseasNames,
   weeklyByCustomer,
   weekStart,
-  b2cData,
   currentYear,
   currentMonth,
   prevYear,
@@ -102,7 +101,7 @@ export default function Menu3({
           <div className="section-header">
             <div className="section-title">주간 매출 보고</div>
             <div className="section-sub">
-              해외법인 · B2B(국가별) · B2C | {currentYear}년 {currentMonth}월 기준
+              해외법인 · B2B(국가별) | {currentYear}년 {currentMonth}월 기준
             </div>
           </div>
           <ReportTable
@@ -114,7 +113,6 @@ export default function Menu3({
             overseasNames={overseasNames}
             weeklyByCustomer={weeklyByCustomer}
             weekStart={weekStart}
-            b2cData={b2cData}
             currentYear={currentYear}
             currentMonth={currentMonth}
           />
